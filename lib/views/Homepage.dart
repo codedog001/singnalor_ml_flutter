@@ -13,6 +13,7 @@ class _HomePageState extends State<HomePage> {
   File _image;
   List _outputs;
   var label;
+  double confidence;
   final picker = ImagePicker();
 
   loadModel() async {
@@ -44,7 +45,7 @@ class _HomePageState extends State<HomePage> {
   classifyImage(File image) async {
     var output = await Tflite.runModelOnImage(
       path: image.path,
-      numResults: 2,
+      numResults: 39,
       threshold: 0.5,
       imageMean: 127.5,
       imageStd: 127.5,
@@ -53,6 +54,7 @@ class _HomePageState extends State<HomePage> {
       _isLoading = false;
       _outputs = output;
       label = _outputs[0]["label"];
+      confidence = _outputs[0]["confidence"];
     });
   }
 
@@ -116,22 +118,47 @@ class _HomePageState extends State<HomePage> {
                     _outputs != null
                         ? Column(
                             children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                              Column(
                                 children: [
-                                  Text(
-                                    'Result: ',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Result: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20),
+                                      ),
+                                      Text(
+                                        label.toString(),
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20.0,
+                                          background: Paint()
+                                            ..color = Colors.white,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    label.toString(),
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 20.0,
-                                      background: Paint()..color = Colors.white,
-                                    ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Confidence: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20),
+                                      ),
+                                      Text(
+                                        confidence.toStringAsFixed(3),
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20.0,
+                                          background: Paint()
+                                            ..color = Colors.white,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
